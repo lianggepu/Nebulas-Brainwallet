@@ -1,0 +1,423 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <link rel="icon shortcut" href=img/logo.png type=image/png>
+    <link rel=apple-touch-icon href=img/logo.png>
+    <link rel=stylesheet href=lib/bootstrap-4.0.0-dist/css/bootstrap.min.css>
+    <link rel=stylesheet href=css/base.css>
+    <link rel=stylesheet href=css/ui-block.css>
+    <meta name=viewport content="width=device-width">
+    <title>NEBULAS</title>
+    <style>
+        input {
+            text-align: center;
+        }
+
+        .active1 {
+            display: none;
+        }
+
+        .download {
+            margin-top: 48px;
+            text-align: center;
+        }
+
+        .wallet_help {
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class=logo-main></div>
+    <div class=header></div>
+
+    <div class="container wallet">
+        <div id=newWallet>
+            <div class=form-group>
+                <label for=password data-i18n=new/enter-password>Enter a password:（Not less than 9 characters）</label>
+                <input type=password class=form-control id=password data-i18n=new/placeholder/do-not-forget placeholder="Do NOT forget to save this!" data-validate-order-matters="required lengthGt8">
+            </div>
+            <button class="btn btn-block" data-i18n=new/new id=creat>Create New Wallet</button>
+        </div>
+        <div class="active1 download">
+            <h1>
+                <span data-i18n=new/save1>Save your</span>
+                <code data-i18n=keystore-file></code>
+                <span data-i18n=new/save3>File.</span>
+            </h1>
+            <button class="btn btn-block" data-i18n=new/gen>Download Keystore File</button>
+        </div>
+        <p class=wallet_help data-i18n=new/comment>
+            This password encrypts your private key.
+            <br>This does not act as a seed to generate your keys.
+            <br>You will need this password + your private key to unlock your wallet.
+        </p>
+    </div>
+
+    <div class=footer></div>
+
+    <script src=lib/jquery-3.3.1.min.js></script>
+    <script src=lib/bootstrap-4.0.0-dist/js/bootstrap.bundle.min.js data-depends=jquery.slim></script>
+    <script src=lib/bootbox.min.js data-depends="bootstrap jquery.slim"></script>
+    <script src=lib/Blob.js></script>
+    <script src=lib/FileSaver.min.js></script>
+    <script src=lib/nebulas.js></script>
+    <script src=js/1-localSave.js></script>
+    <script src=js/home.v1.js></script>
+    <script src=js/i18n.js data-depends=jquery.slim></script>
+    <script src=js/ui-block.js data-depends="bootbox blockies jquery.slim i18n.js nebulas.js"></script>
+    <script>
+        "use strict";
+
+        // replace ="([^ =]+)" with =$1
+
+        var nebulas = require("nebulas"),
+            account = nebulas.Account.NewAccount(), //TODO：流程位置 应该在创建之后 。创建密码应该删除 
+            validateAll = uiBlock.validate();
+		var cryut = nebulas.CryptoUtils;
+
+        uiBlock.insert({
+            footer: ".footer",
+            header: ".header",
+            logoMain: ".logo-main"
+        });
+
+        $("#creat").on("click", onClickCreate);
+        $(".download button").on("click", onClickDownloadButton);
+		var password = null;
+		function checkWeakpass(passwd){
+		    var weakpass = new Array(
+        "123456789",
+        "123123123",
+        "1234567890",
+        "a123456789",
+        "147258369",
+        "woaini1314",
+        "123456abc",
+        "987654321",
+        "123456789a",
+        "abc123456",
+        "111222tianya",
+        "789456123",
+        "1111111111",
+        "woaini520",
+        "woaini123",
+        "111111111",
+        "qwertyuiop",
+        "5201314520",
+        "asd123456",
+        "woaini521",
+        "ASDFGHJKL",
+        "123698745",
+        "zxcvbnm123",
+        "qazwsxedc",
+        "12345678910",
+        "qwe123456",
+        "123654789",
+        "0000000000",
+        "WOAIWOJIA",
+        "741852963",
+        "5845201314",
+        "0123456789",
+        "123456123",
+        "520520520",
+        "q123456789",
+        "qweasdzxc",
+        "5845211314",
+        "qq123456789",
+        "wocaonima",
+        "a12345678",
+        "asdasdasd",
+        "135792468",
+        "963852741",
+        "3.1415926",
+        "1233211234567",
+        "7708801314520",
+        "999999999",
+        "1357924680",
+        "yahoo.com.cn",
+        "123456789q",
+        "5841314520",
+        "zxc123456",
+        "123123qaz",
+        "abcd123456",
+        "000000000",
+        "aaa123456",
+        "110110110",
+        "123456789.",
+        "123456ASD",
+        "woshishui",
+        "123321123",
+        "qaz123456",
+        "111222333",
+        "qq5201314",
+        "147852369",
+        "123456987",
+        "qiulaobai",
+        "7894561230",
+        "110120119",
+        "wmsxie123",
+        "1314520520",
+        "369258147",
+        "321321321",
+        "beijing2008",
+        "147896325",
+        "123456aaa",
+        "521521521",
+        "123456789ABC",
+        "abc123456789",
+        "12345678900",
+        "1q2w3e4r5t",
+        "1234554321",
+        "www123456",
+        "w123456789",
+        "z123456789",
+        "12345678a",
+        "9876543210",
+        "hotmail.com",
+        "100200300",
+        "1234567899",
+        "123456qwe",
+        "123456789QQ",
+        "584131421",
+        "123456123456",
+        "qazwsx123",
+        "wang123456",
+        "7758521521",
+        "1234567891",
+        "woailaopo",
+        "1472583690",
+        "langzi123",
+        "wojiushiwo",
+        "123qweasd",
+        "110120130",
+        "1123581321",
+        "584131420",
+        "woaiwoziji",
+        "584201314",
+        "123456789123",
+        "52013145201314",
+        "5201314123",
+        "321654987",
+        "5841314521",
+        "134679852",
+        "123456654321",
+        "zhangjian",
+        "5205201314",
+        "woaini5201314",
+        "52013141314",
+        "qweqweqwe",
+        "1122334455",
+        "123456789z",
+        "qwertyuiop123",
+        "9638527410",
+        "liu123456",
+        "zhendeaini",
+        "jiushiaini",
+        "xiaoqiang",
+        "123456abcd",
+        "wobuzhidao",
+        "123789456",
+        "zhang123456",
+        "7215217758991",
+        "1234567890123",
+        "123456789aa",
+        "1.23457E+11",
+        "123456zxc",
+        "112233445566",
+        "77585211314",
+        "520131400",
+        "aa123456789",
+        "wpc000821",
+        "woaini1314520",
+        "qq1314520",
+        "1234512345",
+        "123456qaz",
+        "caonima123",
+        "asdf123456",
+        "asdfghjkl123",
+        "123456711",
+        "woshishei",
+        "asd123456789",
+        "qwert12345",
+        "5211314521",
+        "123456789w",
+        "139.com@163.com",
+        "hao123456",
+        "110119120",
+        "13579246810",
+        "12345qwert",
+        "zhangyang",
+        "wokaonima",
+        "623623623",
+        "13800138000",
+        "laopowoaini",
+        "a123123123",
+        "woaini123456",
+        "yang123456",
+        "zhangqiang",
+        "zxcvbnm,./",
+        "167669123",
+        "aa5201314",
+        "8888888888",
+        "zzb19860526",
+        "5201314qq",
+        "123456789asd",
+        "QWErtyUIO",
+        "456456456",
+        "q1w2e3r4t5",
+        "woainilaopo",
+        "123456789*",
+        "zhangjing",
+        "woshiniba",
+        "ainiyiwannian",
+        "abcd123456789",
+        "woshinidie",
+        "1hxboqg2s",
+        "meiyoumima",
+        "QQQ123456",
+        "123456798",
+        "pp.com@163.com",
+        "123698741",
+        "584211314",
+        "123456789+",
+        "789789789",
+        "l123456789",
+        "ABCDEFG123",
+        "789632145",
+        "woshishen",
+        "0987654321",
+        "wangqiang",
+        "123456000",
+        "caonimabi",
+        "qwe123123",
+        "liangliang",
+        "nuttertools",
+        "18n28n24a5",
+        "woxiangni",
+        "a147258369",
+        "zhangliang",
+        "123123456",
+        "chen123456",
+        "775852100",
+        "1213141516",
+        "369369369",
+        "bugaosuni",
+        "13145201314520",
+        "123456...",
+        "1314520123",
+        "7758521123",
+        "qweasd123",
+        "qwe123456789",
+        "1310613106",
+        "456789123",
+        "3141592653",
+        "woxihuanni",
+        "7758258520",
+        "123456789..",
+        "nishiwode",
+        "1314woaini",
+        "123456520",
+        "7418529630",
+        "987456321",
+        "qwer123456",
+        "asdasd123",
+        "Iloveyou1314",
+        "0147258369",
+        "123456789l",
+        "123123123123",
+        "womendeai",
+        "baobei520",
+        "nishishui",
+        "wangliang",
+        "zhangpeng",
+        "woainimama",
+        "zhangchao",
+        "134679258",
+        "qaz123456789",
+        "123456789qwe",
+        "wozhiaini",
+        "abcde12345",
+        "abcd12345",
+        "qq7758521",
+        "poiuytrewq",
+        "2582587758",
+        "11111111111",
+        "asd123123",
+        "1234567890.",
+        "123456789aaa",
+        "8008208820",
+        "www123456789",
+        "1111122222",
+        "AS123456789",
+        "yahoo.com",
+        "1029384756",
+        "aidejiushini",
+        "123qwe123",
+        "operation",
+        "wangshuai",
+        "299792458",
+        "qazwsxedcrfv",
+        "LOVE5201314",
+        "888888888",
+        "1314521521",
+        "476730751",
+        "5201314789",
+        "aqwe518951",
+        "1357913579",
+        "77585217758521",
+        "2008520085",
+        "789654123",
+        "EtnXtxSa65",
+        "woaiwolaopo",
+        "woaini110",
+        "www163com",
+        "159357456",
+        "a11111111",
+        "52013143344",
+        "131452000",
+        "baobao520");
+		for (var i=0,len=weakpass.length; i<len; i++){
+		if (passwd == weakpass[i])
+			return false;
+		}
+		return true;
+		}
+        function onClickCreate() {
+            //validateAll() && $(".download").removeClass("active1");
+			if (validateAll()){
+			    password = $("#password").val();
+				if (!checkWeakpass(password)){
+					alert("您使用了弱口令！！！请重新输入。");
+					return 0;
+					}
+				validateAll() && $(".download").removeClass("active1");
+			    account.setPrivateKey(cryut.sha3(password));
+				var address = account.getAddressString();
+				var prikey = account.getPrivateKeyString();
+				alert("忘记该密码将无法恢复钱包,记住该密码可随时恢复钱包!!!\naddress:"+address+"\nprikey:"+prikey);
+			}
+        }
+
+        function onClickDownloadButton() {
+            var /*password = $("#password").val(),*/ address, keyStr, blob;
+
+            if (validateAll()) {
+                bootbox.alert({
+                    message: "waiting...",
+                    title: "info"
+                });
+
+                // window.open('tokey.html?password=' + password, '_blank');
+
+                address = account.getAddressString();
+                keyStr = account.toKeyString(password);
+                blob = new Blob([keyStr], { type: "application/json; charset=utf-8" });
+                saveAs(blob, address);
+                bootbox.hideAll();
+            }
+        }
+    </script>
+</body>
+</html>
